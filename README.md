@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js 16 i18n Template
 
-## Getting Started
+This is a minimal Next.js 16 App Router template using `next-intl` for three locales:
 
-First, run the development server:
+- French: `/fr`
+- English: `/en`
+- Arabic: `/ar`
+
+It is meant as a small learning template for localized public pages with proper locale routing, translated messages, and RTL support for Arabic.
+
+## What Is Included
+
+- `src/app/[locale]/layout.tsx` sets the document language, direction, and `NextIntlClientProvider`.
+- `src/app/[locale]/page.tsx` reads translated text with `getTranslations()`.
+- `src/app/[locale]/LanguageSwitcher.tsx` switches between `/fr`, `/en`, and `/ar`.
+- `src/i18n/routing.ts` defines the supported locales.
+- `src/i18n/request.ts` loads the correct message file for the current locale.
+- `src/i18n/navigation.ts` exports locale-aware navigation helpers.
+- `src/proxy.ts` enables locale detection/routing for a `src/app` project.
+- `messages/*.json` contains the translation strings.
+
+## Run Locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```txt
+http://localhost:3000/fr
+http://localhost:3000/en
+http://localhost:3000/ar
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Add Translations
 
-## Learn More
+Add the same key to each message file:
 
-To learn more about Next.js, take a look at the following resources:
+```json
+{
+  "hello": "Hello"
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Then read it in a Server Component:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```tsx
+import { getTranslations } from "next-intl/server";
 
-## Deploy on Vercel
+export default async function Page() {
+  const t = await getTranslations();
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+  return <h1>{t("hello")}</h1>;
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+
+Because this project uses `src/app`, the proxy file belongs at `src/proxy.ts`.
+
+Arabic pages use `dir="rtl"` automatically from the locale layout.
